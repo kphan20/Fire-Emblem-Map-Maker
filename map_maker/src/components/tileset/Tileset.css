@@ -1,0 +1,16 @@
+#tilesetContainer {
+  position: relative;
+  height: 512px;
+}
+
+.tilesetSelection {
+  position: absolute;
+  z-index: 2;
+}
+
+.tilesetSelection:hover {
+  border-style: solid;
+  border-width: 1px;
+  border-color: red;
+  color: red;
+}

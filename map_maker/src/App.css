@@ -1,39 +1,92 @@
-.App {
-  text-align: center;
+* {
+  box-sizing: border-box;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body,
+html,
+#root {
+  height: 100%;
+}
+#root {
+  position: relative;
+  overflow: hidden;
+}
+.absolute {
+  position: absolute;
+  z-index: 1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-float infinite 3s ease-in-out;
-  }
-}
-
-.App-header {
-  min-height: 100vh;
+#tileset {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  right: 10px;
+  top: 100px;
+}
+#tilesetToggle {
+  height: 100%;
+}
+#hotbarAdd {
+  bottom: 90px;
+  left: 0px;
+}
+#hotbarClear {
+  bottom: 90px;
+  left: 150px;
+}
+#selectedTile {
+  --background: url("./resources/Sacae1.png");
+  background-image: var(--background);
+  background-repeat: no-repeat;
+  background-size: 1024px 1024px;
+  width: 32px;
+  height: 32px;
+  bottom: 90px;
+  right: 5px;
 }
 
-.App-link {
-  color: rgb(112, 76, 182);
+#hotbar {
+  display: flex;
+  bottom: 60px;
+  left: 0px;
+}
+#gridEditors {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+}
+#container {
+  position: absolute;
+  --background: url("./resources/Sacae1.png");
+  --columns: 0;
+  --rows: 0;
+  --tilesize: 32px;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 32px);
+  grid-template-rows: repeat(var(--rows), 32px);
+  column-gap: 0px;
+  row-gap: 0px;
+  width: fit-content;
+  overflow: hidden;
+  z-index: 0;
 }
 
-@keyframes App-logo-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+.cell {
+  background-image: var(--background);
+  background-repeat: no-repeat;
+  background-size: 1024px 1024px;
+  width: var(--tilesize);
+  height: var(--tilesize);
+}
+
+.hotbarCell {
+  background-image: url("./resources/Sacae1.png");
+  background-repeat: no-repeat;
+  background-size: 1024px 1024px;
+  width: 32px;
+  height: 32px;
 }

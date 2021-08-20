@@ -1,17 +1,13 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import counterReducer from "../features/counter/counterSlice";
+import { configureStore } from "@reduxjs/toolkit";
+import hotbarReducer from "../components/hotbar/hotbarSlice";
+import tilesetReducer from "../components/tileset/tilesetSlice";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    hotbar: hotbarReducer,
+    tileset: tilesetReducer,
   },
 });
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;
