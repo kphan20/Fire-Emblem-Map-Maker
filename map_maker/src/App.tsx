@@ -13,7 +13,6 @@ import {
   MAP_TILE_STYLE,
 } from "./components/utils";
 
-var fs = require("fs");
 // Upper level container for app features
 export default function App() {
   // Used to toggle whether or not the tileset palette is visible
@@ -461,6 +460,17 @@ export default function App() {
     }
     //fs.writeFile("test.json", JSON.stringify(results));
     console.log(JSON.stringify(results));
+    let element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," +
+        encodeURIComponent(`${cols},${rows},${JSON.stringify(results)}`)
+    );
+    element.setAttribute("download", "test.txt");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
     return JSON.stringify(results);
   };
 
