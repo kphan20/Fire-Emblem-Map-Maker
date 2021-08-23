@@ -13,7 +13,6 @@ import {
   MAP_TILE_STYLE,
 } from "./components/utils";
 
-var fs = require("fs");
 // Upper level container for app features
 export default function App() {
   // Used to toggle whether or not the tileset palette is visible
@@ -263,18 +262,29 @@ export default function App() {
         if (selectedTile > -1) {
           let xCoord = e.clientX - scaledDivPos.x;
           let yCoord = e.clientY - scaledDivPos.y;
-          console.log(xCoord, yCoord);
           xCoord = Math.floor(xCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
           yCoord = Math.floor(yCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
-          console.log(xCoord, yCoord);
           changeGridTile(yCoord * cols + xCoord);
         }
       } else if (dragFill) {
-        let xCoord = dragFillInit[0];
-        let yCoord = dragFillInit[1];
-        xCoord = Math.floor(xCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
-        yCoord = Math.floor(yCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
-        changeGridTile(yCoord * cols + xCoord);
+        // Fills in the selected squares
+        let x1 = Math.floor(
+          dragFillInit[0] / (TILE_SCALE * TILE_SIZE * zoomScale)
+        );
+        let y1 = Math.floor(
+          dragFillInit[1] / (TILE_SCALE * TILE_SIZE * zoomScale)
+        );
+        let x2 = Math.floor(
+          (e.clientX - scaledDivPos.x) / (TILE_SCALE * TILE_SIZE * zoomScale)
+        );
+        let y2 = Math.floor(
+          (e.clientY - scaledDivPos.y) / (TILE_SCALE * TILE_SIZE * zoomScale)
+        );
+        for (let i = Math.min(x1, x2); i <= Math.max(x1, x2); i++) {
+          for (let j = Math.min(y1, y2); j <= Math.max(y1, y2); j++) {
+            changeGridTile(j * cols + i);
+          }
+        }
       }
       isDrag = false;
     };
@@ -450,6 +460,17 @@ export default function App() {
     }
     //fs.writeFile("test.json", JSON.stringify(results));
     console.log(JSON.stringify(results));
+    let element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," +
+        encodeURIComponent(`${cols},${rows},${JSON.stringify(results)}`)
+    );
+    element.setAttribute("download", "test.txt");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
     return JSON.stringify(results);
   };
 
