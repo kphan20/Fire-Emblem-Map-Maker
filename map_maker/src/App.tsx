@@ -13,10 +13,14 @@ import {
   MAP_TILE_STYLE,
 } from "./components/utils";
 
+var fs = require("fs");
 // Upper level container for app features
 export default function App() {
   // Used to toggle whether or not the tileset palette is visible
   const [tilesetVisible, toggleTileset] = useState(true);
+
+  // Used to determine whether drag clicks should fill tile editor
+  const [dragFill, setDragFill] = useState(false);
 
   // Calls typed useDispatch from hooks.ts
   const dispatch = useAppDispatch();
@@ -134,6 +138,9 @@ export default function App() {
     // tracks current mouse position [x, y]
     let mousePos = [0, 0];
 
+    // tracks initial drag point for drag fill
+    let dragFillInit = [0, 0];
+
     // used to determine whether a drag action has occurred
     let dragStart = [0, 0];
 
@@ -149,8 +156,8 @@ export default function App() {
     let minLeft = 0;
     let maxLeft = 0;
 
-    // handles zooming scale into container
-    // let scale = 1;
+    // Used to get position relative to container div
+    const scaledDivPos = container.getBoundingClientRect();
 
     /**
      * Checks if a number is within bounds
@@ -181,11 +188,15 @@ export default function App() {
 
     // Handles beginning of click
     const mousedown = (e: MouseEvent) => {
-      // Sets initial mouse position (relative to the container)
+      // Sets initial mouse position (relative to the change in container position)
       mousePos = dragStart = [
         e.clientX - container.offsetLeft,
         e.clientY - container.offsetTop,
       ];
+
+      // Sets initial mouse position (relative to inside of container)
+      dragFillInit = [e.clientX - scaledDivPos.x, e.clientY - scaledDivPos.y];
+
       // Ensures other mouse functions don't trigger accidentally
       isDown = true;
 
@@ -232,12 +243,13 @@ export default function App() {
       if (checkDragDistance(xDiff, yDiff)) {
         isDrag = true;
       }
-
-      // Moves container within bounds
-      currentX = boundChecker(minLeft, maxLeft, currentX);
-      currentY = boundChecker(minTop, maxTop, currentY);
-      container.style.left = `${currentX}px`;
-      container.style.top = `${currentY}px`;
+      if (!dragFill) {
+        // Moves container within bounds
+        currentX = boundChecker(minLeft, maxLeft, currentX);
+        currentY = boundChecker(minTop, maxTop, currentY);
+        container.style.left = `${currentX}px`;
+        container.style.top = `${currentY}px`;
+      }
     };
 
     // Handles mouse release
@@ -249,13 +261,20 @@ export default function App() {
       if (!isDrag) {
         // Checks if there is a valid tile selected
         if (selectedTile > -1) {
-          const scaledDivPos = container.getBoundingClientRect();
           let xCoord = e.clientX - scaledDivPos.x;
           let yCoord = e.clientY - scaledDivPos.y;
+          console.log(xCoord, yCoord);
           xCoord = Math.floor(xCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
           yCoord = Math.floor(yCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
+          console.log(xCoord, yCoord);
           changeGridTile(yCoord * cols + xCoord);
         }
+      } else if (dragFill) {
+        let xCoord = dragFillInit[0];
+        let yCoord = dragFillInit[1];
+        xCoord = Math.floor(xCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
+        yCoord = Math.floor(yCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
+        changeGridTile(yCoord * cols + xCoord);
       }
       isDrag = false;
     };
@@ -285,7 +304,7 @@ export default function App() {
       container.removeEventListener("wheel", zoom);
       window.removeEventListener("mouseup", mouseup);
     };
-  }, [posX, posY, rows, cols, zoomScale]);
+  }, [posX, posY, rows, cols, zoomScale, dragFill]);
 
   // Centers container after change in column/row count
   useEffect(() => {
@@ -429,7 +448,9 @@ export default function App() {
         return;
       }
     }
-    return results;
+    //fs.writeFile("test.json", JSON.stringify(results));
+    console.log(JSON.stringify(results));
+    return JSON.stringify(results);
   };
 
   // Controls input elements editing row and column number
@@ -542,6 +563,13 @@ export default function App() {
         />
         <button id="submit" className="gridEditor" onClick={submit}>
           Submit
+        </button>
+        <button
+          id="toggleDragFill"
+          className="gridEditor"
+          onClick={() => setDragFill((previous) => !previous)}
+        >
+          Drag Fill
         </button>
       </div>
       <div id="container" className="absolute" ref={containerRef}>
