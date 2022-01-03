@@ -1,7 +1,6 @@
 import React from "react";
 import tilesetImage from "../../resources/Sacae1.png";
 import { TILE_SIZE, MAP_DIMENSIONS } from "../utils";
-import { add } from "../hotbar/hotbarSlice";
 import { select } from "./tilesetSlice";
 import { useAppDispatch } from "../../app/hooks";
 import "./Tileset.css";
@@ -53,7 +52,10 @@ export default function Tileset() {
   return (
     <div id="tilesetContainer">
       {overlayGrid}
-      <img src={tilesetImage} alt="tilesetImage" />
+      <img
+        src={require(`../../resources/Sacae1.png`).default}
+        alt="tilesetImage"
+      />
     </div>
   );
 }
