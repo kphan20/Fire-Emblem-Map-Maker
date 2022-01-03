@@ -214,6 +214,8 @@ export default function App() {
       maxLeft = xDiff >= 0 ? xDiff : 0;
       minTop = yDiff >= 0 ? 0 : yDiff;
       maxTop = yDiff >= 0 ? yDiff : 0;
+      //console.log(mousePos, dragStart, dragFillInit, e.clientX, scaledDivPos.x);
+      console.log(scaledDivPos);
     };
 
     // Handles movement of mouse
@@ -282,6 +284,7 @@ export default function App() {
         );
         for (let i = Math.min(x1, x2); i <= Math.max(x1, x2); i++) {
           for (let j = Math.min(y1, y2); j <= Math.max(y1, y2); j++) {
+            if (j > rows - 1 || i > cols - 1) break;
             changeGridTile(j * cols + i);
           }
         }
@@ -326,8 +329,8 @@ export default function App() {
     const yOffset =
       (parseInt(style.getPropertyValue("--rows")) * TILE_SCALE * TILE_SCALE) /
       2;
-    container.style.top = `${window.visualViewport.height / 2 - yOffset}px`;
-    container.style.left = `${window.visualViewport.width / 2 - xOffset}px`;
+    // container.style.top = `${window.visualViewport.height / 2 - yOffset}px`;
+    // container.style.left = `${window.visualViewport.width / 2 - xOffset}px`;
   }, [rows, cols]);
 
   /**
@@ -441,7 +444,7 @@ export default function App() {
   }, []);
 
   // Handles map submission
-  const submit = () => {
+  const submit = async () => {
     const arr = rearrangeTiles(grid!);
     const results = [];
     for (let i = 0; i < arr.length; i++) {
@@ -459,19 +462,30 @@ export default function App() {
       }
     }
     //fs.writeFile("test.json", JSON.stringify(results));
-    console.log(JSON.stringify(results));
-    let element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(`${cols},${rows},${JSON.stringify(results)}`)
-    );
-    element.setAttribute("download", "test.txt");
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    return JSON.stringify(results);
+    const data = {
+      rows: rows,
+      cols: cols,
+      mapData: results,
+    };
+    const response = await fetch("http://127.0.0.1:3000", {
+      mode: "cors",
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    // console.log(JSON.stringify(results));
+    // let element = document.createElement("a");
+    // element.setAttribute(
+    //   "href",
+    //   "data:text/plain;charset=utf-8," +
+    //     encodeURIComponent(`${cols},${rows},${JSON.stringify(results)}`)
+    // );
+    // element.setAttribute("download", "test.txt");
+    // element.style.display = "none";
+    // document.body.appendChild(element);
+    // element.click();
+    // document.body.removeChild(element);
+    console.log(response);
+    return response;
   };
 
   // Controls input elements editing row and column number
@@ -569,6 +583,7 @@ export default function App() {
           className="gridEditor"
           type="number"
           min="0"
+          max="50"
           value={rowsForm}
           onChange={dimensionChange(changeRowsForm)}
           onBlur={dimensionChange(changeGridRows)}
@@ -578,6 +593,7 @@ export default function App() {
           className="gridEditor"
           type="number"
           min="0"
+          max="50"
           value={colsForm}
           onChange={dimensionChange(changeColsForm)}
           onBlur={dimensionChange(changeGridCols)}

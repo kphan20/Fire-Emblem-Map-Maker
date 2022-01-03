@@ -53,7 +53,7 @@ export default function Tileset() {
   return (
     <div id="tilesetContainer">
       {overlayGrid}
-      <img src={tilesetImage} />
+      <img src={tilesetImage} alt="tilesetImage" />
     </div>
   );
 }
