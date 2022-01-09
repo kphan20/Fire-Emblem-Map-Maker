@@ -165,7 +165,7 @@ export default function GridEditor() {
           className="gridEditor"
           onClick={() => dispatch(addBottomRow())}
         >
-          Add Bottom row
+          Add Bottom Row
         </button>
         <button
           id="addTopRow"
