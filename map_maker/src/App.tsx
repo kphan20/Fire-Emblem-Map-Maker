@@ -109,6 +109,25 @@ export default function App() {
   const [grid, changeGrid] = useState<JSX.Element[]>();
 
   /**
+   * Creates map editor grid array
+   * @param x number of rows
+   * @param y number of columns
+   * @returns {JSX.Element[]} array of map tile elements
+   */
+  const gridGenerator = (x: number, y: number): JSX.Element[] => {
+    const arr = [];
+    for (let i = 0; i < x * y; i++) {
+      arr.push(createCell());
+    }
+    return arr;
+  };
+
+  // Generates the empty tile grid upon component mounting
+  useEffect(() => {
+    changeGrid(gridGenerator(rows, cols));
+  }, []);
+
+  /**
    * Handles the editing of tiles in the map editor
    * @param id index of changed tile in map editor
    */
@@ -155,7 +174,7 @@ export default function App() {
     let minLeft = 0;
     let maxLeft = 0;
 
-    // Used to get position relative to container div
+    // Used to get position relative to container div (for drag fill logic)
     const scaledDivPos = container.getBoundingClientRect();
 
     /**
@@ -200,22 +219,28 @@ export default function App() {
       isDown = true;
 
       // Logic to determine bounds when moving the map editor
+      const numCols = parseInt(container.style.getPropertyValue("--columns"));
+      const numRows = parseInt(container.style.getPropertyValue("--rows"));
       const xDiff =
-        window.visualViewport.width -
-        parseInt(container.style.getPropertyValue("--columns")) *
-          TILE_SCALE *
-          TILE_SIZE;
+        window.visualViewport.width - numCols * TILE_SCALE * TILE_SIZE;
       const yDiff =
-        window.visualViewport.height -
-        parseInt(container.style.getPropertyValue("--rows")) *
-          TILE_SCALE *
-          TILE_SIZE;
-      minLeft = xDiff >= 0 ? 0 : xDiff;
-      maxLeft = xDiff >= 0 ? xDiff : 0;
-      minTop = yDiff >= 0 ? 0 : yDiff;
-      maxTop = yDiff >= 0 ? yDiff : 0;
-      //console.log(mousePos, dragStart, dragFillInit, e.clientX, scaledDivPos.x);
-      console.log(scaledDivPos);
+        window.visualViewport.height - numRows * TILE_SCALE * TILE_SIZE;
+
+      // scaleFactor determined after extensive experimentation
+      // complexity may be due to uncertainty with how offset measurements
+      // are given - offset left/top just did not give the correct
+      // measurements when scale was greater than 1
+      const scaleFactor = TILE_SIZE * (zoomScale - 1);
+      const colFactor = numCols * scaleFactor;
+      const rowFactor = numRows * scaleFactor;
+      let sign = xDiff >= 0 ? 1 : -1;
+      let bound = xDiff - sign * colFactor;
+      minLeft = Math.min(sign * colFactor, bound);
+      maxLeft = Math.max(sign * colFactor, bound);
+      sign = yDiff >= 0 ? 1 : -1;
+      bound = yDiff - sign * rowFactor;
+      minTop = Math.min(sign * rowFactor, bound);
+      maxTop = Math.max(sign * rowFactor, bound);
     };
 
     // Handles movement of mouse
@@ -231,8 +256,8 @@ export default function App() {
       ];
 
       // Gets current position of container
-      let currentX = removePixel(container.style.left) || 0;
-      let currentY = removePixel(container.style.top) || 0;
+      let currentX = container.offsetLeft; //removePixel(container.style.left) || 0;
+      let currentY = container.offsetTop; //removePixel(container.style.top) || 0;
 
       // Calcs change in position
       const xDiff = mousePos[0] - dragStart[0];
@@ -262,8 +287,9 @@ export default function App() {
       if (!isDrag) {
         // Checks if there is a valid tile selected
         if (selectedTile > -1) {
-          let xCoord = e.clientX - scaledDivPos.x;
-          let yCoord = e.clientY - scaledDivPos.y;
+          const currRect = container.getBoundingClientRect();
+          let xCoord = e.clientX - currRect.x;
+          let yCoord = e.clientY - currRect.y;
           xCoord = Math.floor(xCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
           yCoord = Math.floor(yCoord / (TILE_SCALE * TILE_SIZE * zoomScale));
           changeGridTile(yCoord * cols + xCoord);
@@ -297,7 +323,7 @@ export default function App() {
       e.preventDefault();
       let scale = zoomScale;
       scale += e.deltaY * -0.01;
-      // Limits zoom in
+      // Limits zoom in between 1 and 4
       scale = Math.min(Math.max(1, scale), 4);
       container.style.transform = `scale(${scale})`;
       changeScale(scale);
@@ -308,7 +334,6 @@ export default function App() {
     container.addEventListener("mouseup", mouseup);
     container.addEventListener("wheel", zoom);
     window.addEventListener("mouseup", mouseup);
-
     // Clean up
     return () => {
       container.removeEventListener("mousedown", mousedown);
@@ -318,34 +343,6 @@ export default function App() {
       window.removeEventListener("mouseup", mouseup);
     };
   }, [posX, posY, rows, cols, zoomScale, dragFill]);
-
-  // Centers container after change in column/row count
-  useEffect(() => {
-    const container = containerRef.current!;
-    const style = container.style;
-    const xOffset =
-      (parseInt(style.getPropertyValue("--columns")) * TILE_SCALE * TILE_SIZE) /
-      2;
-    const yOffset =
-      (parseInt(style.getPropertyValue("--rows")) * TILE_SCALE * TILE_SCALE) /
-      2;
-    // container.style.top = `${window.visualViewport.height / 2 - yOffset}px`;
-    // container.style.left = `${window.visualViewport.width / 2 - xOffset}px`;
-  }, [rows, cols]);
-
-  /**
-   * Creates map editor grid array
-   * @param x number of rows
-   * @param y number of columns
-   * @returns {JSX.Element[]} array of map tile elements
-   */
-  const gridGenerator = (x: number, y: number): JSX.Element[] => {
-    const arr = [];
-    for (let i = 0; i < x * y; i++) {
-      arr.push(createCell());
-    }
-    return arr;
-  };
 
   /**
    * Rearranges map editor array so that the tiles are listed from bottom to top, left to right
@@ -418,7 +415,6 @@ export default function App() {
       const gridCopy = [...tileGrid];
       for (let i = 1; i < rows; i++) {
         gridCopy.splice(i * (columns + 1) - 1, 0, createCell());
-        //console.log(cols, i * cols);
       }
       gridCopy.push(createCell());
       changeCols((previous) => previous + 1);
@@ -437,11 +433,6 @@ export default function App() {
     changeCols((previous) => previous + 1);
     changeGrid(gridCopy);
   };
-
-  // Generates the empty tile grid
-  useEffect(() => {
-    changeGrid(gridGenerator(rows, cols));
-  }, []);
 
   // Handles map submission
   const submit = async () => {
@@ -492,11 +483,20 @@ export default function App() {
   const [rowsForm, changeRowsForm] = useState(rows);
   const [colsForm, changeColsForm] = useState(cols);
 
+  // automatically updates input values when dimensions change
+  // ideally, finding a way to use the rows state for the form
+  // would be nice but changeGridRows/Cols would be affected
+  useEffect(() => {
+    changeRowsForm(rows);
+    changeColsForm(cols);
+  }, [rows, cols]);
+
   // Curried function to handle change in input elements
   const dimensionChange =
     (changeFunction: (x: number) => void) =>
     (e: React.FormEvent<HTMLInputElement>) => {
-      changeFunction(parseInt(e.currentTarget.value));
+      if (e.currentTarget.value)
+        changeFunction(parseInt(e.currentTarget.value));
     };
 
   /**
@@ -554,6 +554,25 @@ export default function App() {
       }
     }
   };
+
+  /**
+   * Brings the map back into a more centralized view
+   */
+  const recenter = () => {
+    const container = containerRef.current!;
+    // if width of map is less than the screen's, center it
+    // otherwise, bring map to left edge
+    const width = container.offsetWidth;
+    const winWidth = window.visualViewport.width;
+    const widthCalc = width < winWidth ? `calc(50vw - ${width / 2}px)` : "0px";
+    container.style.left = widthCalc;
+    // similar logic to width
+    const height = container.offsetHeight;
+    const winHeight = window.visualViewport.height;
+    const heightCalc =
+      height < winHeight ? `calc(50vh - ${height / 2}px)` : "0px";
+    container.style.top = heightCalc;
+  };
   return (
     <>
       <div id="tileset" className="absolute">
@@ -578,26 +597,6 @@ export default function App() {
         <button id="addLeftCol" className="gridEditor" onClick={addLeftCol}>
           Add Left Col
         </button>
-        <input
-          id="rowChange"
-          className="gridEditor"
-          type="number"
-          min="0"
-          max="50"
-          value={rowsForm}
-          onChange={dimensionChange(changeRowsForm)}
-          onBlur={dimensionChange(changeGridRows)}
-        />
-        <input
-          id="colsChange"
-          className="gridEditor"
-          type="number"
-          min="0"
-          max="50"
-          value={colsForm}
-          onChange={dimensionChange(changeColsForm)}
-          onBlur={dimensionChange(changeGridCols)}
-        />
         <button id="submit" className="gridEditor" onClick={submit}>
           Submit
         </button>
@@ -612,20 +611,42 @@ export default function App() {
       <div id="container" className="absolute" ref={containerRef}>
         {grid}
       </div>
-      <button
-        id="hotbarAdd"
-        className="absolute"
-        onClick={() => dispatch(add(selectedTile))}
-      >
-        Add selected to hotbar
-      </button>
-      <button
-        id="hotbarClear"
-        className="absolute"
-        onClick={() => dispatch(clear())}
-      >
-        Clear
-      </button>
+      <div id="hotbarOptions" className="absolute">
+        <button id="hotbarAdd" onClick={() => dispatch(add(selectedTile))}>
+          Add selected to hotbar
+        </button>
+        <button id="hotbarClear" onClick={() => dispatch(clear())}>
+          Clear
+        </button>
+        <button id="recenter" onClick={recenter}>
+          Recenter map
+        </button>
+      </div>
+      <div id="sizeInput" className="absolute">
+        <span>Rows:</span>
+        <input
+          id="rowChange"
+          className="gridEditor"
+          type="number"
+          min="0"
+          max="50"
+          value={rowsForm}
+          onChange={(e) => changeRowsForm(parseInt(e.currentTarget.value))}
+          onBlur={dimensionChange(changeGridRows)}
+        />
+        <br></br>
+        <span>Columns:</span>
+        <input
+          id="colsChange"
+          className="gridEditor"
+          type="number"
+          min="0"
+          max="50"
+          value={colsForm}
+          onChange={(e) => changeColsForm(parseInt(e.currentTarget.value))}
+          onBlur={dimensionChange(changeGridCols)}
+        />
+      </div>
       <div id="selectedTile" className="absolute" style={selectedStyle}></div>
       <Hotbar />
     </>
