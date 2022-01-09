@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
-import Hotbar from "./components/hotbar/Hotbar";
-import { add, clear } from "./components/hotbar/hotbarSlice";
-import Tileset from "./components/tileset/Tileset";
-import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { selectSelectedTile } from "./components/tileset/tilesetSlice";
+import Hotbar from "../components/hotbar/Hotbar";
+import { add, clear } from "../components/hotbar/hotbarSlice";
+import Tileset from "../components/tileset/Tileset";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { selectSelectedTile } from "../components/tileset/tilesetSlice";
 import {
   TILE_SCALE,
   TILE_SIZE,
   DRAG_RADIUS,
   MAP_DIMENSIONS,
   MAP_TILE_STYLE,
-} from "./components/utils";
+} from "../components/utils";
 
 // Upper level container for app features
 export default function App() {
