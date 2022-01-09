@@ -39,7 +39,7 @@ export default function Hotbar() {
 
   // Pads until desired hotbar length is achieved
   while (hotbar.length < HOTBAR_SIZE) {
-    hotbar.push(<div className="hotbarCell"></div>);
+    hotbar.push(<div className="hotbarEmpty"></div>);
   }
   return (
     <div id="hotbar" className="absolute">
