@@ -17,4 +17,11 @@ As of now, the following features are available:
 - Keeping a hotbar to easily select tiles
 - Submitting a completed map for storage in a MongoDB database
 
-I would like to support more tilesets and design a better appearance.
+Moving forward, I would like to work on the following features:
+
+- A hub for viewing other created maps
+- Storing maps in progress
+- Optimizing performance through React docs recommendations (ie using useMemo to mitigate expensive rerenders)
+- Look to reorganize the code into more manageable chunks
+- Finding a way to host the project (preferably github pages)
+- Experimenting with the theme of the website
