@@ -1,6 +1,6 @@
 import React from "react";
 import { selectItems } from "./hotbarSlice";
-import { HOTBAR_SIZE, TILE_SIZE, TILE_SCALE, MAP_DIMENSIONS } from "../utils";
+import { HOTBAR_SIZE, convertSelectedToX, convertSelectedToY } from "../utils";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { select } from "../tileset/tilesetSlice";
 
@@ -14,16 +14,8 @@ export default function Hotbar() {
   const hotbar: JSX.Element[] = items.map((element) => {
     // Correctly positions css sprites
     const style = {
-      backgroundPositionX: `-${
-        (element % (MAP_DIMENSIONS / TILE_SIZE)) * TILE_SIZE * TILE_SCALE
-      }px`,
-      backgroundPositionY: `-${
-        MAP_DIMENSIONS * TILE_SCALE -
-        TILE_SIZE * TILE_SCALE -
-        Math.floor(element / (MAP_DIMENSIONS / TILE_SIZE)) *
-          TILE_SIZE *
-          TILE_SCALE
-      }px`,
+      backgroundPositionX: `-${convertSelectedToX(element)}px`,
+      backgroundPositionY: `-${convertSelectedToY(element)}px`,
     };
     // Returns div element with onClick that changes current selected tile
     return (

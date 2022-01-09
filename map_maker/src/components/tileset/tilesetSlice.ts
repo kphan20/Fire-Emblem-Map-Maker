@@ -4,10 +4,14 @@ import { RootState } from "../../app/store";
 // Makes selectedTile simply a numerical index
 export interface tilesetState {
   selectedTile: number;
+  selectedX: string;
+  selectedY: string;
 }
 
 const initialState = {
   selectedTile: -1,
+  selectedX: "",
+  selectedY: "",
 };
 
 export const tilesetSlice = createSlice({

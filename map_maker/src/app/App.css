@@ -40,7 +40,7 @@ html,
 }
 
 #selectedTile {
-  --background: url("./resources/Sacae1.png");
+  --background: url("../resources/Sacae1.png");
   background-image: var(--background);
   background-repeat: no-repeat;
   background-size: 1024px 1024px;
@@ -75,7 +75,7 @@ html,
 }
 #container {
   position: absolute;
-  --background: url("./resources/Sacae1.png");
+  --background: url("../resources/Sacae1.png");
   --columns: 0;
   --rows: 0;
   --tilesize: 32px;
@@ -90,6 +90,10 @@ html,
   overflow: hidden;
   z-index: 0;
 }
+#recenter {
+  bottom: 5%;
+  left: 5px;
+}
 #hotbarOptions {
   bottom: 5%;
   right: 0%;
@@ -103,7 +107,7 @@ html,
 }
 
 .hotbarCell {
-  background-image: url("./resources/Sacae1.png");
+  background-image: url("../resources/Sacae1.png");
   background-repeat: no-repeat;
   background-size: 1024px 1024px;
   width: 32px;

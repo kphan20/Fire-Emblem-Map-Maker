@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { stat } from "fs";
 import { RootState } from "../../app/store";
 import { HOTBAR_SIZE } from "../utils";
 
@@ -17,6 +18,7 @@ export const hotbarSlice = createSlice({
   reducers: {
     // Adds tile index to hotbar if it's not full and the tile index not already included
     add: (state, action: PayloadAction<number>) => {
+      if (action.payload < 0) return;
       if (
         state.items.length < HOTBAR_SIZE &&
         !state.items.includes(action.payload)
