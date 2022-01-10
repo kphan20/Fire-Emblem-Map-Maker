@@ -25,3 +25,6 @@ Moving forward, I would like to work on the following features:
 - Look to reorganize the code into more manageable chunks
 - Finding a way to host the project (preferably github pages)
 - Experimenting with the theme of the website
+
+I am hosting the page on Github [here.](https://kphan20.github.io/Fire-Emblem-Map-Maker/)
+As of right now, the submit functionality may be lacking because I do not have the node server setup yet (am considering Heroku).
