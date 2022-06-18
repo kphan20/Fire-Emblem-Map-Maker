@@ -41,13 +41,16 @@ export const mapCanvasSlice = createSlice({
   initialState,
   reducers: {
     // edits a tile in the grid
-    changeGridTile: (state, action: PayloadAction<changeGridInterface>) => {
+    changeGridTile: (
+      state: mapCanvasState,
+      action: PayloadAction<changeGridInterface>
+    ) => {
       const newGrid = [...state.grid];
       newGrid[action.payload.id] = createCell(action.payload.style);
       return { ...state, grid: newGrid };
     },
     // adds empty row to bottom of grid
-    addBottomRow: (state) => {
+    addBottomRow: (state: mapCanvasState) => {
       const newGrid = [...state.grid];
       for (let i = 0; i < state.cols; i++) {
         newGrid.push(createCell());
@@ -55,7 +58,7 @@ export const mapCanvasSlice = createSlice({
       return { ...state, grid: newGrid, rows: state.rows + 1 };
     },
     // adds empty row to top
-    addTopRow: (state) => {
+    addTopRow: (state: mapCanvasState) => {
       const newRow = Array(state.cols).fill(createCell());
       return {
         ...state,
@@ -64,7 +67,7 @@ export const mapCanvasSlice = createSlice({
       };
     },
     // adds empty column to right
-    addRightCol: (state) => {
+    addRightCol: (state: mapCanvasState) => {
       const newGrid = [...state.grid];
       // downside of using flattened grid array - splice may not be very efficient
       for (let i = 1; i < state.rows; i++) {
@@ -74,7 +77,7 @@ export const mapCanvasSlice = createSlice({
       return { ...state, grid: newGrid, cols: state.cols + 1 };
     },
     // adds empty column to left
-    addLeftCol: (state) => {
+    addLeftCol: (state: mapCanvasState) => {
       const newGrid = [...state.grid];
       for (let i = 0; i < state.rows; i++) {
         newGrid.splice(i * (state.cols + 1), 0, createCell());
@@ -82,19 +85,19 @@ export const mapCanvasSlice = createSlice({
       return { ...state, grid: newGrid, cols: state.cols + 1 };
     },
     // deletes bottom row by default - may implement top row deletion later
-    deleteRow: (state) => {
+    deleteRow: (state: mapCanvasState) => {
       const newGrid = state.grid.slice(0, state.grid.length - state.cols);
       return { ...state, grid: newGrid, rows: state.rows - 1 };
     },
     // deletes right column by default
-    deleteCol: (state) => {
+    deleteCol: (state: mapCanvasState) => {
       const newGrid = [...state.grid];
       for (let i = newGrid.length - 1; i >= 0; i -= state.cols) {
         newGrid.splice(i, 1);
       }
       return { ...state, grid: newGrid, cols: state.cols - 1 };
     },
-    toggleDragFill: (state) => {
+    toggleDragFill: (state: mapCanvasState) => {
       return { ...state, dragFill: !state.dragFill };
     },
   },
