@@ -234,6 +234,7 @@ export default function MapCanvas() {
 
     container.addEventListener("mousedown", mousedown);
     container.addEventListener("mousemove", mousemoving);
+    document.addEventListener("mousemove", mousemoving);
     container.addEventListener("mouseup", mouseup);
     container.addEventListener("wheel", zoom);
     window.addEventListener("mouseup", mouseup);
@@ -241,6 +242,7 @@ export default function MapCanvas() {
     return () => {
       container.removeEventListener("mousedown", mousedown);
       container.removeEventListener("mousemove", mousemoving);
+      document.removeEventListener("mousemove", mousemoving);
       container.removeEventListener("mouseup", mouseup);
       container.removeEventListener("wheel", zoom);
       window.removeEventListener("mouseup", mouseup);
