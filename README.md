@@ -26,6 +26,6 @@ Moving forward, I would like to work on the following features:
 - Finding a way to host the project (preferably github pages)
 - Experimenting with the theme of the website
 
-I am hosting the page on Github [here.](https://kphan20.github.io/Fire-Emblem-Map-Maker/), thanks
+I am hosting the page on Github [here](https://kphan20.github.io/Fire-Emblem-Map-Maker/), thanks
 to the help of [these instructions.](https://github.com/gitname/react-gh-pages)
 As of right now, the submit functionality may be lacking because I do not have the node server setup yet (am considering Heroku).
