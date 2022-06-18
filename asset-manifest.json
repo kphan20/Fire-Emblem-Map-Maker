@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Fire-Emblem-Map-Maker/static/css/main.73b8e830.chunk.css",
-    "main.js": "/Fire-Emblem-Map-Maker/static/js/main.af31681b.chunk.js",
-    "main.js.map": "/Fire-Emblem-Map-Maker/static/js/main.af31681b.chunk.js.map",
+    "main.js": "/Fire-Emblem-Map-Maker/static/js/main.f411a070.chunk.js",
+    "main.js.map": "/Fire-Emblem-Map-Maker/static/js/main.f411a070.chunk.js.map",
     "runtime-main.js": "/Fire-Emblem-Map-Maker/static/js/runtime-main.f38863fb.js",
     "runtime-main.js.map": "/Fire-Emblem-Map-Maker/static/js/runtime-main.f38863fb.js.map",
     "static/js/2.892fcac1.chunk.js": "/Fire-Emblem-Map-Maker/static/js/2.892fcac1.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.f38863fb.js",
     "static/js/2.892fcac1.chunk.js",
     "static/css/main.73b8e830.chunk.css",
-    "static/js/main.af31681b.chunk.js"
+    "static/js/main.f411a070.chunk.js"
   ]
 }
